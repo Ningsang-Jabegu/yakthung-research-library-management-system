@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -14,6 +15,7 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 const Transactions = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,6 +34,15 @@ const Transactions = () => {
     }
   };
 
+  const handleExport = () => {
+    toast.success('Transactions data exported successfully');
+    // Create a dummy file download with a made-up PDF URL
+    const link = document.createElement('a');
+    link.href = '#';
+    link.download = 'Yakthung Research Library Management System - Transactions.pdf';
+    link.click();
+  };
+
   return (
     <Layout>
       <div className="mb-6 flex justify-between items-center">
@@ -40,7 +51,7 @@ const Transactions = () => {
           <p className="text-muted-foreground mt-1">Manage book borrowings and returns</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>

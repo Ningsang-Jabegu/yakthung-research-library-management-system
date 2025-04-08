@@ -11,7 +11,8 @@ import {
   Home, 
   LogOut, 
   Settings,
-  UserCog
+  UserCog,
+  UsersRound
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -30,7 +31,8 @@ const getNavItems = (role: string) => {
 
   const adminItems = [
     ...authorItems,
-    { name: 'Members', path: '/members', icon: Users },
+    { name: 'Users', path: '/members', icon: Users },
+    { name: 'Teams', path: '/teams', icon: UsersRound },
     { name: 'Transactions', path: '/transactions', icon: ArrowRightLeft },
     { name: 'Reports', path: '/reports', icon: BarChart3 },
     { name: 'Users', path: '/users', icon: UserCog },
@@ -87,6 +89,21 @@ const Sidebar = () => {
       </nav>
       
       <div className="p-4 border-t border-sidebar-border/30">
+        <div className="flex items-center p-2 mb-4">
+          {user?.role === 'Administrator' ? (
+            <img 
+              src="/lovable-uploads/9b7b171b-02f5-4233-9540-44de8924aae5.png" 
+              alt="Admin profile" 
+              className="h-8 w-8 rounded-full mr-3"
+            />
+          ) : (
+            <Users className="h-8 w-8 p-1 bg-sidebar-accent rounded-full mr-3" />
+          )}
+          <div>
+            <p className="text-sm font-medium">{user?.name || 'User'}</p>
+            <p className="text-xs text-sidebar-foreground/70">{user?.role || 'Guest'}</p>
+          </div>
+        </div>
         <Link 
           to="/settings" 
           className="flex items-center px-4 py-3 text-sm rounded-lg text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
@@ -101,6 +118,9 @@ const Sidebar = () => {
           <LogOut className="h-5 w-5 mr-3" />
           Logout
         </button>
+        <div className="mt-6 text-center">
+          <p className="text-xs text-sidebar-foreground/50">Version 0.3</p>
+        </div>
       </div>
     </aside>
   );

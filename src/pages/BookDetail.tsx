@@ -1,15 +1,33 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { books } from '@/data/mockData';
-import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 const BookDetail = () => {
   const { id } = useParams();
   const book = books.find(b => b.id.toString() === id) || null;
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDevelopmentDialog, setShowDevelopmentDialog] = useState(false);
+  const [developmentFeature, setDevelopmentFeature] = useState('');
+
+  const handleFeatureUnderDevelopment = (feature: string) => {
+    setDevelopmentFeature(feature);
+    setShowDevelopmentDialog(true);
+  };
 
   if (!book) {
     return (
@@ -96,35 +114,72 @@ const BookDetail = () => {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-medium mb-4">Actions</h2>
             <div className="space-y-3">
-              <Button className="w-full" asChild>
-                <Link to={`/books/${book.id}/edit`}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Book
-                </Link>
+              <Button className="w-full" onClick={() => handleFeatureUnderDevelopment('Edit Book')}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Book
               </Button>
               
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={() => setShowDeleteDialog(true)}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete Book
               </Button>
               
               {book.status === 'available' ? (
-                <Button variant="secondary" className="w-full" asChild>
-                  <Link to={`/transactions/new?book=${book.id}`}>
-                    Issue Book
-                  </Link>
+                <Button 
+                  variant="secondary" 
+                  className="w-full" 
+                  onClick={() => handleFeatureUnderDevelopment('Issue Book')}
+                >
+                  Issue Book
                 </Button>
               ) : (
-                <Button variant="secondary" className="w-full" asChild>
-                  <Link to={`/transactions/new?book=${book.id}&return=true`}>
-                    Return Book
-                  </Link>
+                <Button 
+                  variant="secondary" 
+                  className="w-full" 
+                  onClick={() => handleFeatureUnderDevelopment('Return Book')}
+                >
+                  Return Book
                 </Button>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Warning</DialogTitle>
+            <DialogDescription>
+              Books once added cannot be deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">
+                <X className="mr-2 h-4 w-4" />
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDevelopmentDialog} onOpenChange={setShowDevelopmentDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Feature Under Development</DialogTitle>
+            <DialogDescription>
+              {developmentFeature} is under development process.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button>Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };

@@ -27,6 +27,65 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { 
+  BarChart, 
+  Bar, 
+  PieChart as RechartsPie, 
+  Pie, 
+  Cell, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  LineChart as RechartsLine,
+  Line
+} from 'recharts';
+import { toast } from 'sonner';
+
+// Sample data for charts
+const monthlyActivityData = [
+  { name: 'Jan', borrow: 65, return: 28 },
+  { name: 'Feb', borrow: 59, return: 48 },
+  { name: 'Mar', borrow: 80, return: 40 },
+  { name: 'Apr', borrow: 81, return: 67 },
+  { name: 'May', borrow: 56, return: 43 },
+  { name: 'Jun', borrow: 55, return: 50 },
+  { name: 'Jul', borrow: 40, return: 36 },
+];
+
+const categoryData = [
+  { name: 'Fiction', value: 35 },
+  { name: 'Science', value: 25 },
+  { name: 'History', value: 20 },
+  { name: 'Biography', value: 10 },
+  { name: 'Others', value: 10 },
+];
+
+const popularBooksData = [
+  { name: 'The Alchemist', checkouts: 28 },
+  { name: 'To Kill a Mockingbird', checkouts: 25 },
+  { name: 'The Great Gatsby', checkouts: 22 },
+  { name: '1984', checkouts: 21 },
+  { name: 'Brave New World', checkouts: 19 },
+];
+
+const memberActivityData = [
+  { name: 'Active', value: 75 },
+  { name: 'Inactive', value: 25 },
+];
+
+const activeMembers = [
+  { name: 'Nima Lama', checkouts: 15 },
+  { name: 'Bishal Nalbo', checkouts: 12 },
+  { name: 'Poonam Limbu', checkouts: 10 },
+  { name: 'Prensu Dongol', checkouts: 8 },
+  { name: 'Smriti Jabegu', checkouts: 5 },
+];
+
+// Colors for charts
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 const Reports = () => {
   const location = useLocation();
@@ -39,6 +98,15 @@ const Reports = () => {
     book.status === 'checked-out' && book.dueDate && new Date(book.dueDate) < new Date()
   );
 
+  const handleExport = () => {
+    toast.success('Report exported successfully');
+    // Create a dummy file download with a made-up PDF URL
+    const link = document.createElement('a');
+    link.href = '#';
+    link.download = 'Yakthung Research Library Management System - Reports.pdf';
+    link.click();
+  };
+
   return (
     <Layout>
       <div className="mb-6 flex justify-between items-center">
@@ -46,7 +114,7 @@ const Reports = () => {
           <h1 className="text-2xl font-semibold">Reports</h1>
           <p className="text-muted-foreground mt-1">View and generate library statistics</p>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" onClick={handleExport}>
           <Download className="mr-2 h-4 w-4" />
           Export Report
         </Button>
@@ -84,8 +152,28 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80 flex items-center justify-center bg-muted/20 rounded-md">
-                <p className="text-muted-foreground">Chart will be displayed here</p>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={monthlyActivityData}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="borrow" fill="#8884d8" name="Borrowed" />
+                    <Bar dataKey="return" fill="#82ca9d" name="Returned" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -100,8 +188,27 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80 flex items-center justify-center bg-muted/20 rounded-md">
-                <p className="text-muted-foreground">Chart will be displayed here</p>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPie width={800} height={400}>
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </RechartsPie>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -114,8 +221,28 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80 flex items-center justify-center bg-muted/20 rounded-md">
-                <p className="text-muted-foreground">Chart will be displayed here</p>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={popularBooksData}
+                    layout="vertical"
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis dataKey="name" type="category" width={120} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="checkouts" fill="#82ca9d" name="Checkouts" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -130,8 +257,26 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80 flex items-center justify-center bg-muted/20 rounded-md">
-                <p className="text-muted-foreground">Chart will be displayed here</p>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPie width={800} height={400}>
+                    <Pie
+                      data={memberActivityData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      <Cell fill="#00C49F" />
+                      <Cell fill="#FFBB28" />
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </RechartsPie>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -144,8 +289,28 @@ const Reports = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80 flex items-center justify-center bg-muted/20 rounded-md">
-                <p className="text-muted-foreground">Chart will be displayed here</p>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={activeMembers}
+                    layout="vertical"
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis dataKey="name" type="category" width={120} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="checkouts" fill="#8884d8" name="Books Checked Out" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>

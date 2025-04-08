@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { books } from '@/data/mockData';
-import { Plus, Search, BookOpen, Edit, Trash2, Download } from 'lucide-react';
+import { Plus, Search, BookOpen, Edit, Trash2, Download, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -14,14 +15,34 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 const Books = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   const filteredBooks = books.filter(
     book => book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
            book.author.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleExport = () => {
+    toast.success('Books data exported successfully');
+    // Create a dummy file download with a made-up PDF URL
+    const link = document.createElement('a');
+    link.href = '#';
+    link.download = 'Yakthung Research Library Management System - Books.pdf';
+    link.click();
+  };
 
   return (
     <Layout>
@@ -31,7 +52,7 @@ const Books = () => {
           <p className="text-muted-foreground mt-1">Manage your library's book collection</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
@@ -101,7 +122,7 @@ const Books = () => {
                         <span className="sr-only">Edit</span>
                       </Link>
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={() => setShowDeleteDialog(true)}>
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Delete</span>
                     </Button>
@@ -112,6 +133,25 @@ const Books = () => {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Warning</DialogTitle>
+            <DialogDescription>
+              Books once added cannot be deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">
+                <X className="mr-2 h-4 w-4" />
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };

@@ -20,8 +20,8 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import { Search, User as UserIcon, Plus, MoreHorizontal } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Search, User as UserIcon, Plus, MoreHorizontal, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
@@ -31,6 +31,11 @@ const Users = () => {
   const [users, setUsers] = useState<User[]>(usersData);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserDialog, setShowUserDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserRole, setNewUserRole] = useState<'User' | 'Author' | 'Administrator'>('User');
+  const [newUserPassword, setNewUserPassword] = useState('');
   const { user } = useAuth();
   
   // Only show users page to administrators
@@ -68,18 +73,69 @@ const Users = () => {
   
   const handleAddUser = () => {
     setSelectedUser(null);
+    setNewUserName('');
+    setNewUserEmail('');
+    setNewUserRole('User');
+    setNewUserPassword('');
     setShowUserDialog(true);
   };
   
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
+    setNewUserName(user.name);
+    setNewUserEmail(user.email);
+    setNewUserRole(user.role);
     setShowUserDialog(true);
   };
   
   const handleSaveUser = (e: React.FormEvent) => {
     e.preventDefault();
-    // This would save the user in a real app
-    toast.success(selectedUser ? 'User updated successfully' : 'User added successfully');
+    
+    if (!newUserName || !newUserEmail) {
+      toast.error('Name and email are required');
+      return;
+    }
+    
+    if (!selectedUser && !newUserPassword) {
+      toast.error('Password is required for new users');
+      return;
+    }
+    
+    if (selectedUser) {
+      // Update existing user
+      const updatedUsers = users.map(u => 
+        u.id === selectedUser.id 
+          ? { ...u, name: newUserName, email: newUserEmail, role: newUserRole } 
+          : u
+      );
+      setUsers(updatedUsers);
+      toast.success('User updated successfully');
+    } else {
+      // Add new user
+      const newUser: User = {
+        id: (users.length + 1).toString(),
+        name: newUserName,
+        email: newUserEmail,
+        role: newUserRole,
+        joinDate: new Date().toISOString().split('T')[0],
+        status: 'active'
+      };
+      setUsers([...users, newUser]);
+      
+      // Also save to localStorage for login functionality
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      const updatedRegisteredUsers = [
+        ...registeredUsers, 
+        {
+          ...newUser,
+          password: newUserPassword
+        }
+      ];
+      localStorage.setItem('registeredUsers', JSON.stringify(updatedRegisteredUsers));
+      
+      toast.success('User added successfully');
+    }
+    
     setShowUserDialog(false);
   };
 
@@ -195,7 +251,8 @@ const Users = () => {
                 </Label>
                 <Input
                   id="name"
-                  defaultValue={selectedUser?.name}
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
                   className="col-span-3"
                   required
                 />
@@ -206,7 +263,8 @@ const Users = () => {
                 </Label>
                 <Input
                   id="email"
-                  defaultValue={selectedUser?.email}
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
                   className="col-span-3"
                   required
                 />
@@ -215,7 +273,10 @@ const Users = () => {
                 <Label htmlFor="role" className="text-right">
                   Role
                 </Label>
-                <Select defaultValue={selectedUser?.role || 'User'}>
+                <Select 
+                  value={newUserRole} 
+                  onValueChange={(value) => setNewUserRole(value as 'User' | 'Author' | 'Administrator')}
+                >
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
@@ -234,6 +295,8 @@ const Users = () => {
                   <Input
                     id="password"
                     type="password"
+                    value={newUserPassword}
+                    onChange={(e) => setNewUserPassword(e.target.value)}
                     className="col-span-3"
                     required={!selectedUser}
                   />
@@ -244,6 +307,25 @@ const Users = () => {
               <Button type="submit">Save</Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Warning</DialogTitle>
+            <DialogDescription>
+              Users once added cannot be deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">
+                <X className="mr-2 h-4 w-4" />
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </Layout>

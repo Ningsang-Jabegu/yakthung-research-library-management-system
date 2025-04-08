@@ -23,6 +23,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Users from "./pages/Users";
 import AllNotifications from "./pages/AllNotifications";
+import Teams from "./pages/Teams";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +90,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <NewMember />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/teams" 
+              element={
+                <ProtectedRoute>
+                  <Teams />
                 </ProtectedRoute>
               } 
             />
