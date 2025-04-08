@@ -82,6 +82,15 @@ const Users = () => {
     toast.success(selectedUser ? 'User updated successfully' : 'User added successfully');
     setShowUserDialog(false);
   };
+
+  const toggleUserStatus = (user: User) => {
+    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+    const updatedUsers = users.map(u => 
+      u.id === user.id ? {...u, status: newStatus} : u
+    );
+    setUsers(updatedUsers);
+    toast.success(`User ${newStatus === 'active' ? 'activated' : 'deactivated'}`);
+  };
   
   return (
     <Layout>
@@ -155,13 +164,7 @@ const Users = () => {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => {
-                            const updatedUsers = users.map(u => 
-                              u.id === user.id ? {...u, status: u.status === 'active' ? 'inactive' : 'active'} : u
-                            );
-                            setUsers(updatedUsers);
-                            toast.success(`User ${user.status === 'active' ? 'deactivated' : 'activated'}`);
-                          }}
+                          onClick={() => toggleUserStatus(user)}
                         >
                           {user.status === 'active' ? 'Deactivate' : 'Activate'}
                         </DropdownMenuItem>
