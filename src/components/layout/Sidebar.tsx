@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   BookOpen, 
@@ -12,6 +12,8 @@ import {
   LogOut, 
   Settings 
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 const navItems = [
   { name: 'Dashboard', path: '/', icon: Home },
@@ -24,6 +26,14 @@ const navItems = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    logout();
+    toast.success('Successfully logged out');
+    navigate('/login');
+  };
   
   return (
     <aside className="w-64 h-screen bg-sidebar text-sidebar-foreground flex flex-col fixed left-0 top-0">
@@ -60,7 +70,10 @@ const Sidebar = () => {
           <Settings className="h-5 w-5 mr-3" />
           Settings
         </Link>
-        <button className="flex items-center w-full px-4 py-3 text-sm rounded-lg text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors">
+        <button 
+          className="flex items-center w-full px-4 py-3 text-sm rounded-lg text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+          onClick={handleLogout}
+        >
           <LogOut className="h-5 w-5 mr-3" />
           Logout
         </button>
