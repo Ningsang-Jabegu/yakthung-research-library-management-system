@@ -10,24 +10,48 @@ import {
   ArrowRightLeft, 
   Home, 
   LogOut, 
-  Settings 
+  Settings,
+  UserCog
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
-const navItems = [
-  { name: 'Dashboard', path: '/', icon: Home },
-  { name: 'Books', path: '/books', icon: BookOpen },
-  { name: 'Members', path: '/members', icon: Users },
-  { name: 'Categories', path: '/categories', icon: BookCopy },
-  { name: 'Transactions', path: '/transactions', icon: ArrowRightLeft },
-  { name: 'Reports', path: '/reports', icon: BarChart3 },
-];
+// Define different navigation items based on role
+const getNavItems = (role: string) => {
+  const baseItems = [
+    { name: 'Dashboard', path: '/', icon: Home },
+    { name: 'Books', path: '/books', icon: BookOpen },
+  ];
+
+  const authorItems = [
+    ...baseItems,
+    { name: 'Categories', path: '/categories', icon: BookCopy },
+  ];
+
+  const adminItems = [
+    ...authorItems,
+    { name: 'Members', path: '/members', icon: Users },
+    { name: 'Transactions', path: '/transactions', icon: ArrowRightLeft },
+    { name: 'Reports', path: '/reports', icon: BarChart3 },
+    { name: 'Users', path: '/users', icon: UserCog },
+  ];
+
+  switch (role) {
+    case 'Administrator':
+      return adminItems;
+    case 'Author':
+      return authorItems;
+    default:
+      return baseItems;
+  }
+};
 
 const Sidebar = () => {
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
+  
+  const navItems = getNavItems(user?.role || 'User');
   
   const handleLogout = () => {
     logout();

@@ -35,7 +35,31 @@ const Register = () => {
       return;
     }
 
-    // Simulate registration (replace with actual auth)
+    // Check if email already exists
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    const emailExists = registeredUsers.some((user: any) => user.email === email);
+    
+    if (emailExists) {
+      toast.error('Email already registered');
+      setLoading(false);
+      return;
+    }
+
+    // Save new user to localStorage
+    const newUser = {
+      id: Date.now().toString(),
+      name,
+      email,
+      password,
+      role,
+      joinDate: new Date().toISOString().split('T')[0],
+      status: 'active'
+    };
+    
+    const updatedUsers = [...registeredUsers, newUser];
+    localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+
+    // Simulate registration delay
     setTimeout(() => {
       toast.success('Registration successful!');
       navigate('/login');

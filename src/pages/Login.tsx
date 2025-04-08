@@ -5,15 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { BookOpen } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,20 +29,37 @@ const Login = () => {
 
     // Simulate login (replace with actual authentication)
     setTimeout(() => {
+      // Check for admin user
       if (email === 'ningsang@yakthungresearch.com' && password === 'NJabegu#112') {
-        // Store user info in localStorage
         const user = {
           name: 'Ningsang Jabegu',
           email: 'ningsang@yakthungresearch.com',
           role: 'Administrator',
           isAuthenticated: true
         };
-        localStorage.setItem('user', JSON.stringify(user));
         
+        login(user);
         toast.success('Login successful!');
         navigate('/');
       } else {
-        toast.error('Invalid email or password');
+        // Check localStorage for registered users
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        const foundUser = registeredUsers.find((u: any) => u.email === email && u.password === password);
+        
+        if (foundUser) {
+          const user = {
+            name: foundUser.name,
+            email: foundUser.email,
+            role: foundUser.role,
+            isAuthenticated: true
+          };
+          
+          login(user);
+          toast.success('Login successful!');
+          navigate('/');
+        } else {
+          toast.error('Invalid email or password');
+        }
       }
       setLoading(false);
     }, 1000);
