@@ -84,7 +84,8 @@ const Users = () => {
   };
 
   const toggleUserStatus = (user: User) => {
-    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+    // Explicitly type the newStatus as "active" | "inactive"
+    const newStatus: "active" | "inactive" = user.status === 'active' ? 'inactive' : 'active';
     const updatedUsers = users.map(u => 
       u.id === user.id ? {...u, status: newStatus} : u
     );
