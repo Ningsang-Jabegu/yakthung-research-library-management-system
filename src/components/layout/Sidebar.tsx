@@ -30,7 +30,7 @@ const Sidebar = () => {
       <div className="p-6">
         <h1 className="text-xl font-semibold flex items-center">
           <BookOpen className="mr-2 h-6 w-6 text-sidebar-primary" />
-          <span className="text-sidebar-foreground">BookWise Nexus</span>
+          <span className="text-sidebar-foreground">Yakthung Research</span>
         </h1>
       </div>
       

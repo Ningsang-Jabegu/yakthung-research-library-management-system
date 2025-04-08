@@ -6,13 +6,14 @@ import RecentActivities from '@/components/dashboard/RecentActivities';
 import BookCategories from '@/components/dashboard/BookCategories';
 import PopularBooks from '@/components/dashboard/PopularBooks';
 import { BookOpen, Users, ArrowRightLeft, AlertTriangle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   return (
     <Layout>
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Welcome to BookWise Nexus Library Management System</p>
+        <p className="text-muted-foreground mt-1">Welcome to Yakthung Research Library Management System</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -62,22 +63,22 @@ const Dashboard = () => {
         <div className="data-card">
           <h3 className="text-lg font-medium mb-4">Quick Links</h3>
           <div className="grid grid-cols-2 gap-4">
-            <button className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
+            <Link to="/books/new" className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
               <BookOpen className="h-6 w-6 text-primary mb-2" />
               <p className="font-medium text-sm">Add New Book</p>
-            </button>
-            <button className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
+            </Link>
+            <Link to="/members/new" className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
               <Users className="h-6 w-6 text-primary mb-2" />
               <p className="font-medium text-sm">Add New Member</p>
-            </button>
-            <button className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
+            </Link>
+            <Link to="/transactions/new" className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
               <ArrowRightLeft className="h-6 w-6 text-primary mb-2" />
               <p className="font-medium text-sm">New Transaction</p>
-            </button>
-            <button className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
+            </Link>
+            <Link to="/reports/overdues" className="bg-primary/10 hover:bg-primary/20 rounded-lg p-4 transition text-left">
               <AlertTriangle className="h-6 w-6 text-primary mb-2" />
               <p className="font-medium text-sm">View Overdues</p>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
